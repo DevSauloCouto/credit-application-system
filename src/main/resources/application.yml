@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:credit_application_system_db
+    username: adminSlCouto
+    password: admin#$SL
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-orthers: false
