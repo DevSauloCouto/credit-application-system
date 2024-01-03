@@ -12,7 +12,7 @@ data class Customer (
 
         @Column(nullable = false, unique = true) val cpf: String,
 
-        @Column(nullable = false) val income: BigDecimal,
+        @Column(nullable = false) var income: BigDecimal,
 
         @Column(nullable = false, unique = true) var email: String = "",
 
