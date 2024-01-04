@@ -5,7 +5,9 @@ import me.dio.credit.application.system.DTO.credit.CreditDTO
 import me.dio.credit.application.system.DTO.credit.CreditListDTO
 import me.dio.credit.application.system.DTO.credit.CreditViewDTO
 import me.dio.credit.application.system.entities.Credit
+import me.dio.credit.application.system.entities.Customer
 import me.dio.credit.application.system.services.implement.CreditService
+import me.dio.credit.application.system.services.implement.CustomerService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -21,7 +23,8 @@ import java.util.stream.Collectors
 @RestController
 @RequestMapping("/api/credits")
 class CreditController(
-        private val creditService: CreditService
+        private val creditService: CreditService,
+        private val customerService: CustomerService
 ) {
 
     @PostMapping
@@ -33,7 +36,8 @@ class CreditController(
 
     @GetMapping
     fun findAllByCustomerId(@RequestParam(value = "customerId") customerId: Long): ResponseEntity<List<CreditListDTO>> {
-        val listCredits: List<CreditListDTO> = this.creditService.findAllByCustomer(customerId)
+        val customer: Customer = this.customerService.findById(customerId);
+        val listCredits: List<CreditListDTO> = this.creditService.findAllByCustomer(customer.id!!)
                 .stream()
                 .map { credit: Credit -> CreditListDTO(credit) }
                 .collect(Collectors.toList());
@@ -43,7 +47,8 @@ class CreditController(
 
     @GetMapping("/{creditCode}")
     fun findByCreditCode(@RequestParam(value = "customerId") customerId: Long, @PathVariable creditCode: UUID): ResponseEntity<CreditViewDTO> {
-        val credit: Credit = this.creditService.findByCreditCode(customerId, creditCode);
+        val customer: Customer = this.customerService.findById(customerId);
+        val credit: Credit = this.creditService.findByCreditCode(customer.id!!, creditCode);
 
         return ResponseEntity.status(HttpStatus.OK).body(CreditViewDTO(credit));
     }
