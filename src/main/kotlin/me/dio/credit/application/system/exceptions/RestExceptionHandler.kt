@@ -49,4 +49,43 @@ class RestExceptionHandler {
 
     }
 
+    @ExceptionHandler(NotFoundException::class)
+    fun handleNotFoundException(e: NotFoundException): ResponseEntity<ExceptionDetails> {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+            ExceptionDetails(
+                title = "Not Found Resource",
+                timestamp = LocalDateTime.now(),
+                status = HttpStatus.NOT_FOUND.value(),
+                exception = e.javaClass.toString(),
+                details = mutableMapOf(e.cause.toString() to e.message)
+            )
+        )
+    }
+
+    @ExceptionHandler(IllegalAccessException::class)
+    fun handleIllegalAccess(e: IllegalAccessException): ResponseEntity<ExceptionDetails> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ExceptionDetails(
+                title = "You can't access a loan request that doesn't belong to you",
+                timestamp = LocalDateTime.now(),
+                status = HttpStatus.BAD_REQUEST.value(),
+                exception = e.javaClass.toString(),
+                details = mutableMapOf(e.cause.toString() to e.message)
+            )
+        )
+    }
+
+    @ExceptionHandler(DateInvalidException::class)
+    fun handleDateInvalid(e: DateInvalidException): ResponseEntity<ExceptionDetails> {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            ExceptionDetails(
+                title = "Request invalid, Date Invalid",
+                timestamp = LocalDateTime.now(),
+                status = HttpStatus.BAD_REQUEST.value(),
+                exception = e.javaClass.toString(),
+                details = mutableMapOf(e.cause.toString() to e.message)
+            )
+        )
+    }
+
 }
