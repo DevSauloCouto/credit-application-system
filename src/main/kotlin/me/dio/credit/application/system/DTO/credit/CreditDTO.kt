@@ -21,25 +21,12 @@ data class CreditDTO(
 ) {
 
     fun toEntity(): Credit {
-        if(isValidDate()){
             return Credit(
                 creditValue = this.creditValue,
                 dayFirstInstallment = this.dayFirstInstallment,
                 numberOfInstallment = this.numberOfInstallment,
                 customer = Customer(id = this.customerId)
             )
-        }
-        throw DateInvalidException("It is only possible to request a loan if the payment date of the first installment is 3 months after the requested date");
-    }
-
-    private fun isValidDate(): Boolean {
-        val dateActual = LocalDate.now().monthValue;
-
-        if(dayFirstInstallment.monthValue - dateActual < 3){
-            return false;
-        }
-
-        return true;
     }
 
 }
