@@ -40,7 +40,7 @@ class CreditService(
         return if(dayFirstInstallment.isBefore(LocalDate.now().plusMonths(3)))
                     true
                 else
-            throw DateInvalidException("It is only possible to request a loan if the payment date of the first installment is 3 months after the requested date")
+            throw DateInvalidException("It is only possible to request a loan if the payment date of the first installment is 3 months before the requested date")
     }
 
 }
