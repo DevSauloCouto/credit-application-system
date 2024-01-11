@@ -70,7 +70,7 @@ class CustomerControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.income").value(521.70))
             .andExpect(MockMvcResultMatchers.jsonPath("$.street").value("C"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.zipCode").value("325612000"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(7))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(7L))
             .andDo(MockMvcResultHandlers.print())
     }
 
@@ -213,7 +213,7 @@ class CustomerControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.income").value(2800))
             .andExpect(MockMvcResultMatchers.jsonPath("$.street").value("Rua A"))
             .andExpect(MockMvcResultMatchers.jsonPath("$.zipCode").value("458986555"))
-            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1L))
+            .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(customer.id))
             .andDo(MockMvcResultHandlers.print())
     }
 
@@ -260,7 +260,7 @@ class CustomerControllerTest {
             .andExpect(MockMvcResultMatchers.jsonPath("$.details[*]").isNotEmpty)
     }
 
-    private fun buildCustomerDTO(
+    fun buildCustomerDTO(
         firstName: String = "Saulo",
         lastName: String = "Couto",
         email: String = "slcouto@teste",
