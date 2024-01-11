@@ -79,7 +79,7 @@ class RestExceptionHandler {
     fun handleDateInvalid(e: DateInvalidException): ResponseEntity<ExceptionDetails> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
             ExceptionDetails(
-                title = "Request invalid, Date Invalid",
+                title = "BAD REQUEST! Date Invalid",
                 timestamp = LocalDateTime.now(),
                 status = HttpStatus.BAD_REQUEST.value(),
                 exception = e.javaClass.toString(),

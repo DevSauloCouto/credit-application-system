@@ -30,24 +30,24 @@ import java.util.stream.Collectors
 
 @RestController
 @RequestMapping("/api/credits")
-@Tag(name = "Credits", description = "Controller for Credit Entity")
+@Tag(name = "Credits", description = "Controller to Credit Entity")
 class CreditController(
         private val creditService: CreditService,
         private val customerService: CustomerService
 ) {
 
     @Operation(
-        description = "Utilizado para criar uma nova solicitação de crédito. O campo 'numberOfInstallment' deve ser preenchido com um valor entre 1 e 48. O campo 'dayFirstInstallment' deve ser preenchido com uma data após 3 meses da data solicitada o crédito. Nenhum campo deve ser enviado com valor null.",
-        summary = "Salva um Entity Credit no Database - Usado para solicitar um empréstimo de crédito"
+        description = "Rota utilizada para salvar um novo Credit na base de dados. No body da requisição deve ser enviado um CreditDTO composto pelos seguintes campos: 'creditValue', 'dayFirstInstallment', 'numberOfInstallment', 'customerId'. O campo 'numberOfInstallment' deve ser preenchido com um valor entre 1 e 48. O campo 'dayFirstInstallment' deve ser preenchido com uma data em até 3 meses após a data solicitada do crédito. Nenhum campo deve ser enviado com valor null ou em branco.",
+        summary = "Rota para salvar uma entidade Credit na base de dados"
     )
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "201", description = "Created - Todos os campos corretamente preenchidos", content = [
+            ApiResponse(responseCode = "201", description = "CREATED - Credit salvo com sucesso", content = [
                 Content(mediaType = "application/json", array = (
                         ArraySchema(schema = Schema(implementation = CreditDTO::class))
                         ))
             ]),
-            ApiResponse(responseCode = "400", description = "Bad Request - Campos inválidos, possíveis: 'numberOfInstallment', 'dayFirstInstallment'. Nenhum dos campos deve ser enviado com valor null", content = [
+            ApiResponse(responseCode = "400", description = "BAD REQUEST - ocorreu algum erro, ou existe algum campo inválido.", content = [
                 Content(mediaType = "application/json", array = (
                         ArraySchema(schema = Schema(implementation = ExceptionDetails::class))
                         ))
@@ -62,8 +62,8 @@ class CreditController(
     }
 
     @Operation(
-        description = "Utilizado para consultar uma lista de Credit que pertencem a um Customer. Necessário passar um QueryParam 'customerId' com um valor numérico, que representa o ID (PK) de um Customer no Database",
-        summary = "Retorna uma lista de CreditListDto pertencentes a um Customer com base na QueryParam(customerId)"
+        description = "Rota utilizada para consultar uma lista de Credit que pertencem a um Customer. Necessário passar um QueryParam 'customer' com um valor numérico, que representa o ID (PK) de um Customer na base de dados",
+        summary = "Rota para consultar uma lista de Credit pertencentes a um Customer com base na QueryParam (customer)"
     )
     @ApiResponses(
         value = [
@@ -72,7 +72,7 @@ class CreditController(
                         ArraySchema(schema = Schema(implementation = CreditListDTO::class))
                         ))
             ]),
-            ApiResponse(responseCode = "404", description = "Not Found - Não existe nenhum Customer com o mesmo ID passado na QueryParam", content = [
+            ApiResponse(responseCode = "404", description = "NOT FOUND - não existe nenhum Customer com o mesmo ID passado na QueryParam", content = [
                 Content(mediaType = "application/json", array = (
                         ArraySchema(schema = Schema(implementation = ExceptionDetails::class))
                         ))
@@ -80,7 +80,7 @@ class CreditController(
         ]
     )
     @GetMapping
-    fun findAllByCustomerId(@RequestParam(value = "customerId") customerId: Long): ResponseEntity<List<CreditListDTO>> {
+    fun findAllByCustomerId(@RequestParam(value = "customer") customerId: Long): ResponseEntity<List<CreditListDTO>> {
         val customer: Customer = this.customerService.findById(customerId);
         val listCredits: List<CreditListDTO> = this.creditService.findAllByCustomer(customer.id!!)
                 .stream()
@@ -91,22 +91,22 @@ class CreditController(
     }
 
     @Operation(
-        description = "Usado para consultar informações de um determinado Credit, necessário passar o creditCode do Credit no path da requisição e um QueryParam - 'customerId' com um valor numérico que representa o ID (PK) de um Customer no Database. (obs: Apenas é retornado se o Credit baseado no creditCode pertencer ao Customer baseado no customerId)",
-        summary = "Retorna detalhadamente informações de um Credit específico com base no creditCode passado no path da requisição e um QueryParam(customerId) pertencente ao ID de um Customer"
+        description = "Rota usada para consultar informações de um determinado Credit, necessário passar o creditCode do Credit no path da requisição e um QueryParam - 'customer' com um valor numérico que representa o ID (PK) de um Customer na base de dados. (obs: Apenas é retornado se o Credit baseado no creditCode pertencer ao Customer baseado no ID do customer passado no QueryParam, caso contrário ele retorna um erro)",
+        summary = "Rota para consultar informações detalhadas de um Credit específico com base no creditCode passado no path da requisição e um QueryParam (customer) pertencente ao ID de um Customer"
     )
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "200", description = "OK - Retorna um determinado Credit de um Customer com mais informações", content = [
+            ApiResponse(responseCode = "200", description = "OK - retorna um determinado Credit de um Customer com mais informações", content = [
                 Content(mediaType = "application/json", array = (
                         ArraySchema(schema = Schema(implementation = CreditViewDTO::class))
                         ))
             ]),
-            ApiResponse(responseCode = "404", description = "Not Found - quando não existe um Customer com o mesmo ID passado no QueryParam da requisição OU quando não existe um Credit com o mesmo creditCode passado no path da requisição", content = [
+            ApiResponse(responseCode = "404", description = "NOT FOUND - quando não existe um Customer com o mesmo ID passado no QueryParam da requisição OU quando não existe um Credit com o mesmo creditCode passado no path da requisição", content = [
                 Content(mediaType = "application/json", array = (
                         ArraySchema(schema = Schema(implementation = ExceptionDetails::class))
                         ))
             ]),
-            ApiResponse(responseCode = "400", description = "Bad Request - Quando um Credit não pertence ao Customer referenciado pelo ID passado no QueryParam", content = [
+            ApiResponse(responseCode = "400", description = "BAD REQUEST - Quando um Credit não pertence ao Customer referenciado pelo ID passado no QueryParam", content = [
                 Content(mediaType = "application/json", array = (
                         ArraySchema(schema = Schema(implementation = ExceptionDetails::class))
                         ))
@@ -114,7 +114,7 @@ class CreditController(
         ]
     )
     @GetMapping("/{creditCode}")
-    fun findByCreditCode(@RequestParam(value = "customerId") customerId: Long, @PathVariable creditCode: UUID): ResponseEntity<CreditViewDTO> {
+    fun findByCreditCode(@RequestParam(value = "customer") customerId: Long, @PathVariable creditCode: UUID): ResponseEntity<CreditViewDTO> {
         val customer: Customer = this.customerService.findById(customerId);
         val credit: Credit = this.creditService.findByCreditCode(customer.id!!, creditCode);
 
