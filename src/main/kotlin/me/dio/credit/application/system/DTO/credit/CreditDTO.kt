@@ -13,10 +13,17 @@ import java.math.BigDecimal
 import java.time.LocalDate
 
 data class CreditDTO(
-        @field:NotNull(message = "Please, this field cannot be empty") val creditValue: BigDecimal,
-        @field:Future(message = "Please provide a future date") val dayFirstInstallment: LocalDate,
-        @field:NotNull @field:Max(48) @field:Min(1) val numberOfInstallment: Int,
-        @field:NotNull(message = "Please, this field cannot be empty") val customerId: Long
+        @field:NotNull(message = "Please, this field cannot be empty")
+        val creditValue: BigDecimal,
+
+        @field:Future(message = "Please provide a future date") @field:NotNull(message = "Please, this field cannot be empty")
+        val dayFirstInstallment: LocalDate,
+
+        @field:NotNull(message = "Please, this field cannot be empty") @field:Max(48) @field:Min(1)
+        val numberOfInstallment: Int,
+
+        @field:NotNull(message = "Please, this field cannot be empty")
+        val customerId: Long?
 
 ) {
 
